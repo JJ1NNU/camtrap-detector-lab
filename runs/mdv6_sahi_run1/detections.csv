@@ -1,0 +1,1 @@
+video,frame_idx,frame_time_sec,model,strategy,det_id,label,class_id,score,x1,y1,x2,y2,cx,cy,w,h,mask_area,mask_json
