@@ -5,9 +5,10 @@ from ..config import dump_config
 from ..utils.mask import encode_mask
 
 class ResultWriter:
-    def __init__(self, run_dir, save_masks="polygon"):
+    def __init__(self, run_dir, save_masks="polygon", polygon_max_pts=80):
         self.run_dir = run_dir
         self.save_masks = save_masks
+        self.polygon_max_pts = int(polygon_max_pts)
         os.makedirs(run_dir, exist_ok=True)
         self.det_path = os.path.join(run_dir, "detections.csv")
         self.time_path = os.path.join(run_dir, "timings.csv")
@@ -31,7 +32,7 @@ class ResultWriter:
         rows = []
         for j, d in enumerate(dets):
             x1, y1, x2, y2 = d.bbox
-            enc = encode_mask(d.mask, self.save_masks)
+            enc = encode_mask(d.mask, self.save_masks, self.polygon_max_pts)
             rows.append({
                 "video": video, "frame_idx": frame_idx, "frame_time_sec": round(frame_time, 3),
                 "model": model, "strategy": strategy, "det_id": j,

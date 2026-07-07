@@ -27,9 +27,14 @@ strategy:
   nms_iou: 0.5
 
 results:
-  save_masks: rle        # none | area | polygon | rle
-  save_viz: false            # write annotated mp4 per video
-  push_every_video: true     # git push after each video (real-time upload)
+  save_masks: rle        # none | area | polygon | rle  (CSV 마스크 정밀도/용량)
+  mask_polygon_max_pts: 60   # polygon일 때 외곽선 점 수 (작을수록 CSV 가벼움)
+  save_viz: false            # 주석 영상(mp4) 저장 여부
+  viz_max_side: 960          # 주석 영상 긴 변 px (작을수록 용량↓)
+  viz_fps: 6                 # 주석 영상 fps (작을수록 용량↓)
+  viz_crf: 30                # H.264 품질 (23=큼/고화질, 28=기본, 32=작음)
+  viz_draw_masks: true       # 마스크 오버레이 (false면 bbox만, 더 가벼움)
+  push_every_video: true     # 영상마다 git push (실시간 업로드)
 
 git:
   enabled: true

@@ -18,7 +18,8 @@ def run_experiment(config_path: str) -> str:
     run_dir = os.path.join(exp["output_dir"], exp["name"])
     rcfg = cfg.get("results", {}) or {}
 
-    writer = ResultWriter(run_dir, save_masks=rcfg.get("save_masks", "polygon"))
+    writer = ResultWriter(run_dir, save_masks=rcfg.get("save_masks", "polygon"),
+                          polygon_max_pts=rcfg.get("mask_polygon_max_pts", 80))
     writer.save_config(cfg)
 
     pre = cfg["data"].get("preprocess", {}) or {}
@@ -31,7 +32,13 @@ def run_experiment(config_path: str) -> str:
     strategy = STRATEGIES.build(strat_cfg)
 
     save_viz = bool(rcfg.get("save_viz", False))
-    viz = VideoVisualizer(run_dir, fps=(pre.get("fps") or 8.0)) if save_viz else None
+    viz = VideoVisualizer(
+        run_dir,
+        fps=rcfg.get("viz_fps", (pre.get("fps") or 8.0)),
+        max_side=rcfg.get("viz_max_side", 1280),
+        crf=rcfg.get("viz_crf", 28),
+        draw_masks=rcfg.get("viz_draw_masks", True),
+    ) if save_viz else None
 
     gcfg = cfg.get("git", {}) or {}
     git = GitSync(gcfg.get("repo_dir", "."), branch=gcfg.get("branch", "main"),
@@ -51,7 +58,7 @@ def run_experiment(config_path: str) -> str:
             dets = strategy.run(frame)
             ndet += writer.write_frame(vid, model_name, strat_name, fidx, ftime, dets)
             if viz is not None:
-                annotated.append(draw(frame, dets))
+                annotated.append(draw(frame, dets, draw_masks=rcfg.get("viz_draw_masks", True)))
             nf += 1
         total_sec = time.time() - t0
         writer.write_timing(vid, nf, total_sec, ndet)

@@ -1,0 +1,42 @@
+experiment:
+  name: mdv6-yolo10-c_sahi_run1
+  output_dir: /content/camtrap-detector-lab/runs
+
+data:
+  input_dir: /content/drive/MyDrive/평두메5/TestSamples
+  video_exts: [".MP4", ".MOV"]
+  preprocess:
+    fps: 2
+    max_side: 0           # resize long-side size, 0이면 원본 유지
+    clip_seconds: null    # 영상 길이 제한(초), null이면 원본 유지
+
+model:
+  name: mdv6          # -> MegaDetectorV6
+  device: cuda
+  conf: 0.1           # 조류를 위해 낮게 설정
+  version: "MDV6-yolov10-c"   # MDV6-yolov9-c/e, MDV6-yolov10-c/e, MDV6-rtdetr-c
+
+strategy:
+  name: sahi
+  tile_size: 640
+  overlap: 0.2
+  full_frame_pass: true
+  nms_iou: 0.5
+
+results:
+  save_masks: none           # none | area | polygon | rle  (CSV 마스크 정밀도/용량), MD는 무관
+  mask_polygon_max_pts: 60   # polygon일 때 외곽선 점 수 (작을수록 CSV 가벼움)
+  save_viz: true             # 주석 영상(mp4) 저장 여부
+  viz_max_side: 960          # 주석 영상 긴 변 px (작을수록 용량↓)
+  viz_fps: 2                 # 주석 영상 fps (작을수록 용량↓)
+  viz_crf: 32                # H.264 품질 (23=큼/고화질, 28=기본, 32=작음)
+  viz_draw_masks: true       # 마스크 오버레이 (false면 bbox만, 더 가벼움)
+  push_every_video: false     # 영상마다 git push (실시간 업로드)
+
+git:
+  enabled: true
+  repo_dir: /content/camtrap-detector-lab
+  remote: origin
+  branch: main
+  author_name: JJ1NNU
+  author_email: jinwo1111@uos.ac.kr

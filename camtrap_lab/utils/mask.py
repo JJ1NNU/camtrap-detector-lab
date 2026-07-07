@@ -24,13 +24,13 @@ def mask_rle(m):
     return {"h": int(m.shape[0]), "w": int(m.shape[1]),
             "data": base64.b64encode(comp).decode("ascii")}
 
-def encode_mask(m, mode):
+def encode_mask(m, mode, polygon_max_pts=80):
     if m is None or mode == "none":
         return None
     if mode == "area":
         return {"area": mask_area(m)}
     if mode == "polygon":
-        return {"area": mask_area(m), "polygon": mask_polygon(m)}
+        return {"area": mask_area(m), "polygon": mask_polygon(m, polygon_max_pts)}
     if mode == "rle":
         return {"area": mask_area(m), "rle": mask_rle(m)}
     return None
