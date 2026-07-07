@@ -1,13 +1,13 @@
 experiment:
-  name: mdv5a_whole_run1
+  name: mdv5a_sahi_run1
   output_dir: /content/camtrap-detector-lab/runs
 
 data:
-  input_dir: /content/drive/MyDrive/YOUR_DATA_DIR
-  video_exts: [".MP4", ".MOV", ".mp4", ".mov"]
+  input_dir: /content/drive/MyDrive/평두메5/TestSamples
+  video_exts: [".MP4", ".MOV"]
   preprocess:
-    fps: 5            # target sampling fps (null = source fps)
-    max_side: 1280    # resize long side (0 = original)
+    fps: 2            # target sampling fps (null = source fps)
+    max_side: 0    # resize long side (0 = original)
     clip_seconds: null  # null = whole video, or a number for first N seconds
 
 model:
@@ -17,7 +17,11 @@ model:
   version: "a"        # "a" or "b"
 
 strategy:
-  name: whole
+  name: sahi
+  tile_size: 640
+  overlap: 0.2
+  full_frame_pass: true
+  nms_iou: 0.5
 
 results:
   save_masks: polygon        # none | area | polygon | rle  (CSV 마스크 정밀도/용량)

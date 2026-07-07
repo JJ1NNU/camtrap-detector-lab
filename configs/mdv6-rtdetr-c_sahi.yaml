@@ -1,5 +1,5 @@
 experiment:
-  name: mdv6-yolo10-c_sahi_run1
+  name: mdv6-rtdetr-c_sahi_run1
   output_dir: /content/camtrap-detector-lab/runs
 
 data:
@@ -14,7 +14,7 @@ model:
   name: mdv6          # -> MegaDetectorV6
   device: cuda
   conf: 0.1           # 조류를 위해 낮게 설정
-  version: "MDV6-yolov10-c"   # MDV6-yolov9-c/e, MDV6-yolov10-c/e, MDV6-rtdetr-c
+  version: "MDV6-rtdetr-c"   # MDV6-yolov9-c/e, MDV6-yolov10-c/e, MDV6-rtdetr-c
 
 strategy:
   name: sahi
