@@ -1,0 +1,40 @@
+experiment:
+  name: sam3_sahi_run1
+  output_dir: /content/camtrap-detector-lab/runs
+
+data:
+  input_dir: /content/drive/MyDrive/YOUR_DATA_DIR
+  video_exts: [".MP4", ".MOV", ".mp4", ".mov"]
+  preprocess:
+    fps: 2            # SAM 3 is heavy; sample sparsely
+    max_side: 1920
+    clip_seconds: 10  # first 10 seconds only (optional)
+
+model:
+  name: sam3          # -> SAM 3 image concept detector (bbox + mask)
+  device: cuda
+  conf: 0.3
+  prompts: ["animal", "bird"]
+  autocast_dtype: float16    # T4
+  checkpoint_path: null      # null = HF default (facebook/sam3, gated)
+  bpe_path: null
+
+strategy:
+  name: sahi
+  tile_size: 640
+  overlap: 0.2
+  full_frame_pass: true
+  nms_iou: 0.5
+
+results:
+  save_masks: rle        # none | area | polygon | rle
+  save_viz: false            # write annotated mp4 per video
+  push_every_video: true     # git push after each video (real-time upload)
+
+git:
+  enabled: true
+  repo_dir: /content/camtrap-detector-lab
+  remote: origin
+  branch: main
+  author_name: colab-bot
+  author_email: colab@example.com

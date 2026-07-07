@@ -1,0 +1,37 @@
+experiment:
+  name: mdv6_sahi_run1
+  output_dir: /content/camtrap-detector-lab/runs
+
+data:
+  input_dir: /content/drive/MyDrive/YOUR_DATA_DIR
+  video_exts: [".MP4", ".MOV", ".mp4", ".mov"]
+  preprocess:
+    fps: 5
+    max_side: 1920    # keep high-res so SAHI can recover small objects
+    clip_seconds: null
+
+model:
+  name: mdv6          # -> MegaDetectorV6 (Pytorch-Wildlife)
+  device: cuda
+  conf: 0.2
+  version: "MDV6-yolov9-c"   # e.g. MDV6-yolov9-c/e, MDV6-yolov10-c/e, MDV6-rtdetr-c
+
+strategy:
+  name: sahi
+  tile_size: 640
+  overlap: 0.2
+  full_frame_pass: true
+  nms_iou: 0.5
+
+results:
+  save_masks: polygon        # none | area | polygon | rle
+  save_viz: false            # write annotated mp4 per video
+  push_every_video: true     # git push after each video (real-time upload)
+
+git:
+  enabled: true
+  repo_dir: /content/camtrap-detector-lab
+  remote: origin
+  branch: main
+  author_name: colab-bot
+  author_email: colab@example.com

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# keep runs/ tracked so results push to GitHub; ignore scratch:
+/content/
+*.tmp.mp4

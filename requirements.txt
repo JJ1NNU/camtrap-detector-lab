@@ -1,0 +1,7 @@
+# Pinned for Colab (numpy<2 needed by sam3; opencv build matched to numpy 1.x)
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+PyYAML>=6.0
+PytorchWildlife
+# SAM 3 is installed separately from git (see README):
+#   pip install "sam3[notebooks] @ git+https://github.com/facebookresearch/sam3.git"

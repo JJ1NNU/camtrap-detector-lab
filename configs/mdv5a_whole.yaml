@@ -1,0 +1,33 @@
+experiment:
+  name: mdv5a_whole_run1
+  output_dir: /content/camtrap-detector-lab/runs
+
+data:
+  input_dir: /content/drive/MyDrive/YOUR_DATA_DIR
+  video_exts: [".MP4", ".MOV", ".mp4", ".mov"]
+  preprocess:
+    fps: 5            # target sampling fps (null = source fps)
+    max_side: 1280    # resize long side (0 = original)
+    clip_seconds: null  # null = whole video, or a number for first N seconds
+
+model:
+  name: mdv5a         # -> MegaDetectorV5a (Pytorch-Wildlife)
+  device: cuda
+  conf: 0.2
+  version: "a"        # "a" or "b"
+
+strategy:
+  name: whole
+
+results:
+  save_masks: polygon        # none | area | polygon | rle
+  save_viz: false            # write annotated mp4 per video
+  push_every_video: true     # git push after each video (real-time upload)
+
+git:
+  enabled: true
+  repo_dir: /content/camtrap-detector-lab
+  remote: origin
+  branch: main
+  author_name: colab-bot
+  author_email: colab@example.com
