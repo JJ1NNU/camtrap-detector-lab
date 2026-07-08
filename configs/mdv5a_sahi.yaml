@@ -1,42 +1,39 @@
 experiment:
   name: mdv5a_sahi_run1
   output_dir: /content/camtrap-detector-lab/runs
-
 data:
   input_dir: /content/drive/MyDrive/평두메5/TestSamples
-  video_exts: [".MP4", ".MOV"]
+  video_exts:
+  - .MP4
+  - .MOV
   preprocess:
-    fps: 2            # target sampling fps (null = source fps)
-    max_side: 0    # resize long side (0 = original)
-    clip_seconds: null  # null = whole video, or a number for first N seconds
-
+    fps: 6
+    max_side: 0
+    clip_seconds: null
 model:
-  name: mdv5a         # -> MegaDetectorV5a (Pytorch-Wildlife)
+  name: mdv5a
   device: cuda
   conf: 0.2
-  version: "a"        # "a" or "b"
-
+  version: a
 strategy:
   name: sahi
   tile_size: 640
   overlap: 0.2
   full_frame_pass: true
   nms_iou: 0.5
-
 results:
-  save_masks: polygon        # none | area | polygon | rle  (CSV 마스크 정밀도/용량)
-  mask_polygon_max_pts: 60   # polygon일 때 외곽선 점 수 (작을수록 CSV 가벼움)
-  save_viz: false            # 주석 영상(mp4) 저장 여부
-  viz_max_side: 960          # 주석 영상 긴 변 px (작을수록 용량↓)
-  viz_fps: 6                 # 주석 영상 fps (작을수록 용량↓)
-  viz_crf: 30                # H.264 품질 (23=큼/고화질, 28=기본, 32=작음)
-  viz_draw_masks: true       # 마스크 오버레이 (false면 bbox만, 더 가벼움)
-  push_every_video: true     # 영상마다 git push (실시간 업로드)
-
+  save_masks: polygon
+  mask_polygon_max_pts: 60
+  save_viz: false
+  viz_max_side: 960
+  viz_fps: 6
+  viz_crf: 28
+  viz_draw_masks: true
+  push_every_video: true
 git:
   enabled: true
   repo_dir: /content/camtrap-detector-lab
   remote: origin
   branch: main
-  author_name: colab-bot
-  author_email: colab@example.com
+  author_name: JJ1NNU
+  author_email: jinwo1111@uos.ac.kr
