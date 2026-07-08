@@ -1,37 +1,36 @@
 experiment:
   name: sam3_run1
   output_dir: /content/camtrap-detector-lab/runs
-
 data:
   input_dir: /content/drive/MyDrive/평두메5/TestSamples
-  video_exts: [".MP4", ".MOV"]
+  video_exts:
+  - .MP4
+  - .MOV
   preprocess:
-    fps: 2            # SAM 3 is heavy; sample sparsely
+    fps: 2
     max_side: 0
     clip_seconds: None
-
 model:
-  name: sam3          
+  name: sam3
   device: cuda
   conf: 0.3
-  prompts: ["animal", "bird"]
-  autocast_dtype: float16    # T4
-  checkpoint_path: null      # null = HF default (facebook/sam3, gated)
+  prompts:
+  - animal
+  - bird
+  autocast_dtype: float16
+  checkpoint_path: null
   bpe_path: null
-
 strategy:
   name: whole
-
 results:
-  save_masks: polygon        # none | area | polygon | rle  (CSV 마스크 정밀도/용량)
-  mask_polygon_max_pts: 60   # polygon일 때 외곽선 점 수 (작을수록 CSV 가벼움)
-  save_viz: true            # 주석 영상(mp4) 저장 여부
-  viz_max_side: 960          # 주석 영상 긴 변 px (작을수록 용량↓)
-  viz_fps: 2                 # 주석 영상 fps (작을수록 용량↓)
-  viz_crf: 28                # H.264 품질 (23=큼/고화질, 28=기본, 32=작음)
-  viz_draw_masks: true       # 마스크 오버레이 (false면 bbox만, 더 가벼움)
-  push_every_video: false     # 영상마다 git push (실시간 업로드)
-
+  save_masks: polygon
+  mask_polygon_max_pts: 60
+  save_viz: true
+  viz_max_side: 960
+  viz_fps: 2
+  viz_crf: 28
+  viz_draw_masks: true
+  push_every_video: true
 git:
   enabled: true
   repo_dir: /content/camtrap-detector-lab
