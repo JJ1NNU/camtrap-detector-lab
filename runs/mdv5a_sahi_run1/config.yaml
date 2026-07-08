@@ -1,0 +1,39 @@
+experiment:
+  name: mdv5a_sahi_run1
+  output_dir: /content/camtrap-detector-lab/runs
+data:
+  input_dir: /content/drive/MyDrive/평두메5/TestSamples
+  video_exts:
+  - .MP4
+  - .MOV
+  preprocess:
+    fps: 6
+    max_side: 0
+    clip_seconds: null
+model:
+  name: mdv5a
+  device: cuda
+  conf: 0.2
+  version: a
+strategy:
+  name: sahi
+  tile_size: 640
+  overlap: 0.2
+  full_frame_pass: true
+  nms_iou: 0.5
+results:
+  save_masks: polygon
+  mask_polygon_max_pts: 60
+  save_viz: false
+  viz_max_side: 960
+  viz_fps: 6
+  viz_crf: 28
+  viz_draw_masks: true
+  push_every_video: true
+git:
+  enabled: true
+  repo_dir: /content/camtrap-detector-lab
+  remote: origin
+  branch: main
+  author_name: JJ1NNU
+  author_email: jinwo1111@uos.ac.kr
