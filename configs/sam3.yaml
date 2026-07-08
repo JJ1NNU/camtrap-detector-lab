@@ -9,7 +9,7 @@ data:
   preprocess:
     fps: 2
     max_side: 0
-    clip_seconds: None
+    clip_seconds: null
 model:
   name: sam3
   device: cuda
