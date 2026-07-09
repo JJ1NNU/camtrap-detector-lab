@@ -34,9 +34,11 @@ strategy:
       keep_class_ids: [14]     # COCO bird
       conf: 0.25
       device: cuda
-  night_model:            # 야간 조류: SAM3. 가중치 파일 없으면 자동으로 MD 폴백
+  night_model:            # 야간 조류: SAM3 (gated). 다운로드/로드 실패 시에만 MD 폴백
     name: sam3_ultra
-    weights: /content/sam3.pt
+    weights: ""              # 로컬 sam3.pt 가 있으면 그 경로. 없으면 아래 hf_repo 로 다운로드
+    hf_repo: "facebook/sam3" # gated: huggingface.co/facebook/sam3 접근 승인 + HF_TOKEN 필요
+    hf_filename: "sam3.pt"   # ⚠️ repo 안의 실제 .pt 파일명으로 확인/수정하세요
     prompts: ["duck", "bird"]
     conf: 0.25
     quantize: 16

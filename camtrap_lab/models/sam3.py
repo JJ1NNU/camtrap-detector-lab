@@ -26,6 +26,21 @@ class SAM3Detector(Detector):
         self._torch = None
         self._dtype = None
 
+    def _hf_login(self):
+        """facebook/sam3 는 gated repo → HF 토큰이 있어야 다운로드됨.
+        HF_TOKEN(또는 HUGGING_FACE_HUB_TOKEN) 환경변수가 있으면 로그인한다."""
+        import os
+        tok = (os.environ.get("HF_TOKEN")
+               or os.environ.get("HUGGING_FACE_HUB_TOKEN")
+               or os.environ.get("HUGGINGFACE_TOKEN"))
+        if not tok:
+            return
+        try:
+            from huggingface_hub import login
+            login(token=tok, add_to_git_credential=False)
+        except Exception:
+            pass  # 토큰이 있으면 hf_hub 다운로드가 env 로도 인증됨
+
     def _lazy(self):
         if self._proc is not None:
             return
@@ -37,7 +52,16 @@ class SAM3Detector(Detector):
             kw["bpe_path"] = self.bpe_path
         if self.checkpoint_path:
             kw["checkpoint_path"] = self.checkpoint_path
-        model = build_sam3_image_model(**kw)
+        else:
+            self._hf_login()  # gated facebook/sam3 가중치 인증
+        try:
+            model = build_sam3_image_model(**kw)
+        except Exception as e:
+            raise RuntimeError(
+                "SAM3 가중치 로드 실패. checkpoint_path 가 null 이면 가중치를 gated HF repo "
+                "'facebook/sam3' 에서 받습니다. (1) huggingface.co/facebook/sam3 에서 접근 승인, "
+                "(2) HF_TOKEN 환경변수로 토큰 제공(또는 model.checkpoint_path 에 로컬 .pt 지정)이 "
+                f"필요합니다. 원본 오류: {e}") from e
         self._proc = Sam3Processor(model, confidence_threshold=self.conf)
         self._torch = torch
         self._dtype = torch.float16 if self.autocast_dtype == "float16" else torch.bfloat16

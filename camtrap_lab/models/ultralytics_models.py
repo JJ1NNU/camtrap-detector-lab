@@ -96,15 +96,31 @@ class SAM3UltralyticsDetector(Detector):
     produces_masks = True
 
     def __init__(self, weights="sam3.pt", prompts=("duck", "bird"), conf=0.25,
-                 quantize=16, device="cuda", label="bird"):
+                 quantize=16, device="cuda", label="bird",
+                 hf_repo=None, hf_filename=None):
         self.weights = weights
         self.prompts = list(prompts)
         self.conf = float(conf)
         self.quantize = quantize
         self.device = device
         self.label = label
+        self.hf_repo = hf_repo          # gated HF repo (예: facebook/sam3)
+        self.hf_filename = hf_filename  # 그 repo 안의 실제 .pt 파일명
         self._predictor = None
         self._tmp = os.path.join(tempfile.gettempdir(), "_camtrap_sam3_frame.jpg")
+
+    def _resolve_weights(self):
+        """로컬 파일 > HF 다운로드 > (마지막으로) ultralytics 가 이름으로 받도록 위임."""
+        if self.weights and os.path.exists(self.weights):
+            return self.weights
+        if self.hf_repo and self.hf_filename:
+            from huggingface_hub import hf_hub_download
+            tok = (os.environ.get("HF_TOKEN")
+                   or os.environ.get("HUGGING_FACE_HUB_TOKEN")
+                   or os.environ.get("HUGGINGFACE_TOKEN"))
+            print(f"[sam3_ultra] HF 에서 가중치 다운로드: {self.hf_repo}/{self.hf_filename}")
+            return hf_hub_download(self.hf_repo, filename=self.hf_filename, token=tok)
+        return self.weights  # ultralytics 가 자동 다운로드 가능한 버전이면 성공, 아니면 여기서 에러
 
     def _lazy(self):
         if self._predictor is not None:
@@ -112,7 +128,7 @@ class SAM3UltralyticsDetector(Detector):
         from ultralytics.models.sam import SAM3SemanticPredictor
         self._predictor = SAM3SemanticPredictor(overrides=dict(
             conf=self.conf, task="segment", mode="predict",
-            model=self.weights, quantize=self.quantize, verbose=False))
+            model=self._resolve_weights(), quantize=self.quantize, verbose=False))
 
     def detect(self, image_bgr) -> List[Detection]:
         self._lazy()

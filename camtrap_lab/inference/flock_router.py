@@ -44,8 +44,11 @@ class FlockRouterStrategy(InferenceStrategy):
         if not night_model:
             return None
         w = night_model.get("weights")
-        if w and not os.path.exists(w):        # gated local weights missing -> MD fallback
-            print(f"[flock_router] night weights not found ({w}) -> night uses MegaDetector fallback")
+        has_hf = bool(night_model.get("hf_repo") and night_model.get("hf_filename"))
+        # 로컬 파일도 없고 HF 소스도 없을 때만 미리 폴백. (HF 소스가 있으면 첫 사용 시 다운로드 시도)
+        if not has_hf and w and not os.path.exists(w):
+            print(f"[flock_router] night weights not found ({w}) and no hf_repo/hf_filename "
+                  f"-> night uses MegaDetector fallback")
             return None
         return DETECTORS.build(dict(night_model))
 
@@ -62,8 +65,14 @@ class FlockRouterStrategy(InferenceStrategy):
         if frame_saturation_bgr(image_bgr) < self.night_sat_th:     # night / IR
             if self._night is None:
                 return md_dets                 # SAM3 unavailable -> MD fallback
-            merged = merge_param(self._boxes(self._night.detect(image_bgr)),
-                                 (H, W), **self.night_merge)
+            try:
+                night_dets = self._night.detect(image_bgr)   # 첫 호출에서 가중치 로드/다운로드
+            except Exception as e:
+                print(f"[flock_router] SAM3 야간 추론 실패 ({str(e)[:100]}) "
+                      f"-> 이후 야간은 MegaDetector 폴백")
+                self._night = None             # 매 프레임 재시도 방지
+                return md_dets
+            merged = merge_param(self._boxes(night_dets), (H, W), **self.night_merge)
         else:                                                       # day
             boxes = []
             for det in self._day:
