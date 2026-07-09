@@ -1,21 +1,20 @@
 experiment:
   name: flock_router_run1
   output_dir: /content/camtrap-detector-lab/runs
-
 data:
   input_dir: /content/drive/MyDrive/평두메5/TestSamples
-  video_exts: [".MP4", ".MOV"]
+  video_exts:
+  - .MP4
+  - .MOV
   preprocess:
-    fps: 2
-    max_side: 0           # 긴 변 리사이즈, 0=원본
-    clip_seconds: null    # 초반 N초, null=전체
-
-model:                    # 1차 검출 = MegaDetector (포유류/폴백 경로에도 사용)
-  name: mdv6              # mdv5a 도 가능
+    fps: 6
+    max_side: 0
+    clip_seconds: null
+model:
+  name: mdv6
   device: cuda
   conf: 0.25
-  version: "MDV6-yolov10-e"
-
+  version: MDV6-yolov10-e
 strategy:
   name: flock_router
   flock_th: 4             # 프레임당 검출 수 >= 이 값이면 '새 떼'로 판정
@@ -43,18 +42,16 @@ strategy:
     conf: 0.25
     quantize: 16
     device: cuda
-
 results:
-  save_masks: none        # 라우터 출력은 bbox 뿐 (마스크는 SAM3에서 박스로 변환됨)
+  save_masks: none
   save_viz: true
   viz_max_side: 960
   viz_fps: 2
   viz_crf: 30
-  viz_draw_masks: false
-  push_every_video: false
-
+  viz_draw_masks: true
+  push_every_video: true
 git:
-  enabled: false          # 필요하면 true 로. runs/ 는 추적 대상이라 push 됨
+  enabled: false
   repo_dir: /content/camtrap-detector-lab
   remote: origin
   branch: main
