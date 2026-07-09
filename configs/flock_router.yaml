@@ -1,58 +1,66 @@
 experiment:
   name: flock_router_run1
   output_dir: /content/camtrap-detector-lab/runs
-
 data:
   input_dir: /content/drive/MyDrive/평두메5/TestSamples
-  video_exts: [".MP4", ".MOV"]
+  video_exts:
+  - .MP4
+  - .MOV
   preprocess:
-    fps: 2
-    max_side: 0           # 긴 변 리사이즈, 0=원본
-    clip_seconds: null    # 초반 N초, null=전체
-
-model:                    # 1차 검출 = MegaDetector (포유류/폴백 경로에도 사용)
-  name: mdv6              # mdv5a 도 가능
+    fps: 6
+    max_side: 0
+    clip_seconds: null
+model:
+  name: mdv6
   device: cuda
   conf: 0.25
-  version: "MDV6-yolov10-e"
-
+  version: MDV6-yolov10-e
 strategy:
   name: flock_router
-  flock_th: 4             # 프레임당 검출 수 >= 이 값이면 '새 떼'로 판정
-  night_sat_th: 10        # HSV 채도 평균 < 이 값이면 야간(IR)
-  bird_label: bird        # 새 떼 경로의 최종 라벨 (종분류 CNN 제외)
-  day_merge:  {pad: 0.0, merge_iou: 0.70, merge_ioa: 0.95}   # 주간: 보수적 병합
-  night_merge: {pad: 0.2, merge_iou: 0.20, merge_ioa: 0.50}  # 야간: 공격적 병합
-  day_models:             # 주간 조류: RT-DETR + YOLO-World 앙상블 (자동 다운로드)
-    - name: yoloworld
-      weights: yolov8x-worldv2.pt
-      classes: ["duck", "bird"]
-      conf: 0.25
-      device: cuda
-    - name: rtdetr
-      weights: rtdetr-x.pt
-      keep_class_ids: [14]     # COCO bird
-      conf: 0.25
-      device: cuda
-  night_model:            # 야간 조류: SAM3. 가중치 파일 없으면 자동으로 MD 폴백
+  flock_th: 4
+  night_sat_th: 10
+  bird_label: bird
+  day_merge:
+    pad: 0.0
+    merge_iou: 0.7
+    merge_ioa: 0.95
+  night_merge:
+    pad: 0.2
+    merge_iou: 0.2
+    merge_ioa: 0.5
+  day_models:
+  - name: yoloworld
+    weights: yolov8x-worldv2.pt
+    classes:
+    - duck
+    - bird
+    conf: 0.25
+    device: cuda
+  - name: rtdetr
+    weights: rtdetr-x.pt
+    keep_class_ids:
+    - 14
+    conf: 0.25
+    device: cuda
+  night_model:
     name: sam3_ultra
     weights: /content/sam3.pt
-    prompts: ["duck", "bird"]
+    prompts:
+    - duck
+    - bird
     conf: 0.25
     quantize: 16
     device: cuda
-
 results:
-  save_masks: none        # 라우터 출력은 bbox 뿐 (마스크는 SAM3에서 박스로 변환됨)
+  save_masks: none
   save_viz: true
   viz_max_side: 960
   viz_fps: 2
   viz_crf: 30
-  viz_draw_masks: false
-  push_every_video: false
-
+  viz_draw_masks: true
+  push_every_video: true
 git:
-  enabled: false          # 필요하면 true 로. runs/ 는 추적 대상이라 push 됨
+  enabled: false
   repo_dir: /content/camtrap-detector-lab
   remote: origin
   branch: main
