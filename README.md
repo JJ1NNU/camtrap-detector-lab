@@ -99,6 +99,7 @@ Every knob lives in the YAML — nothing is hardcoded.
 
 ---
 
+
 ## 4. What gets saved  (`runs/<name>/`)
 
 - **`config.yaml`** — the exact resolved config used.

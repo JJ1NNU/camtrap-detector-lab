@@ -5,3 +5,8 @@ PyYAML>=6.0
 PytorchWildlife
 # SAM 3 is installed separately from git (see README):
 #   pip install "sam3[notebooks] @ git+https://github.com/facebookresearch/sam3.git"
+#
+# For the `flock_router` strategy (YOLO-World + RT-DETR + ultralytics SAM3):
+#   pip install -U "ultralytics>=8.3.237" supervision
+#   pip install git+https://github.com/ultralytics/CLIP.git   # YOLO-World vocabulary
+#   # ultralytics SAM3 (sam3_ultra) needs a local sam3.pt (gated on HF); else night->MD fallback

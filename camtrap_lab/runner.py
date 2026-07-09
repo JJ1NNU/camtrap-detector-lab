@@ -9,8 +9,8 @@ from .results.writer import ResultWriter
 from .results.visualizer import VideoVisualizer, draw
 from .utils.gitsync import GitSync
 # Import side-effect registrations (no hardcoded dispatch):
-from .models import megadetector, sam3   # noqa: F401
-from .inference import whole, sahi       # noqa: F401
+from .models import megadetector, sam3, ultralytics_models   # noqa: F401
+from .inference import whole, sahi, flock_router             # noqa: F401
 
 def run_experiment(config_path: str) -> str:
     cfg = load_config(config_path)
